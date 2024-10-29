@@ -1,12 +1,11 @@
 package routes
 
 import (
-	"net/http"
-	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/models"
 	"github.com/hayzedd2/Go-events/utils"
+	"net/http"
+	"strings"
 )
 
 func signUp(c *gin.Context) {
@@ -68,9 +67,25 @@ func login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "login succesful", "token": token, "user": gin.H{
-		"email":    user.Email,
-		"userName": validatedUser.UserName,
-		"userId":   validatedUser.UserId,
-	}})
+	c.JSON(http.StatusOK, gin.H{"message": "login succesful", "token": token})
+}
+
+func GetUserDetails(c *gin.Context) {
+	var user *models.User
+	userId := c.GetString("userId")
+	user, err := models.GetUserByUserId(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not get user",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"user": gin.H{
+			"id":       user.ID,
+			"email":    user.Email,
+			"userName": user.UserName,
+			"userId":   user.UserId,
+		},
+	})
 }

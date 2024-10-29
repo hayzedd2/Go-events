@@ -13,7 +13,7 @@ type User struct {
 	UserName string `binding:"required"`
 	Email    string `binding:"required"`
 	Password string `binding:"required"`
-	UserId string
+	UserId   string
 }
 type UserLogin struct {
 	ID       int64
@@ -48,10 +48,9 @@ func (u *User) Save() error {
 	}
 	u.ID = userId
 	return nil
-
 }
 
-func (u *UserLogin) ValidateCredentials() (*User,error) {
+func (u *UserLogin) ValidateCredentials() (*User, error) {
 	query := "SELECT id,userName,password,userId FROM users WHERE email =?"
 	row := db.DB.QueryRow(query, u.Email)
 	var retrievedPassword string
@@ -64,6 +63,16 @@ func (u *UserLogin) ValidateCredentials() (*User,error) {
 	if !passwordIsValid {
 		return nil, errors.New("invalid credentials")
 	}
+	return &user, nil
+}
 
+func GetUserByUserId(userId string) (*User, error) {
+	query := "SELECT id, email, userName, userId FROM users WHERE userId = ?"
+	row := db.DB.QueryRow(query, userId)
+	var user User
+	err := row.Scan(&user.ID, &user.Email, &user.UserName, &user.UserId)
+	if err != nil {
+		return nil, err
+	}
 	return &user, nil
 }
