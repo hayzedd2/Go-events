@@ -37,8 +37,10 @@ func createTables() {
 	 id INTEGER PRIMARY KEY AUTOINCREMENT,
 	 name TEXT NOT NULL,
 	 description TEXT NOT NULL,
-	 dateTime DATETIME NOT NULL,
+	 startDate DATETIME NOT NULL,
+	 startTime TEXT NOT NULL,
 	 location TEXT NOT NULL,
+	 category TEXT NOT NULL,
 	 user_id TEXT,
 	 FOREIGN KEY (user_id) REFERENCES users(userId)
 	)

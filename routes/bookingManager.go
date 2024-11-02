@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"net/http"
-	"strconv"
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/models"
+	"net/http"
+	"strconv"
 )
 
 func bookEvent(c *gin.Context) {
@@ -23,6 +23,20 @@ func bookEvent(c *gin.Context) {
 		})
 		return
 	}
+	isBooked, err := models.IsBooked(userId, eventId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "error getting booking status",
+		})
+		return
+	}
+	if isBooked {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "User has already booked this event",
+		})
+		return
+	}
+
 	err = event.Book(userId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -60,4 +74,15 @@ func cancelEventBooking(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Event booking cancelled!"})
+}
+
+func getBookings(c *gin.Context) {
+	bookings, err := models.GetAllBookings()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Could not fetch bookings",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, bookings)
 }

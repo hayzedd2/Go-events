@@ -3,7 +3,6 @@ package routes
 import (
 	"net/http"
 	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/models"
 )
@@ -12,7 +11,7 @@ func getEvents(c *gin.Context) {
 	events, err := models.GetAllEvents()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Could not parse fetch events",
+			"message": "Could not  fetch events",
 		})
 		return
 	}
