@@ -2,19 +2,45 @@ package db
 
 import (
 	"database/sql"
+	"log"
+	"os"
+	"path/filepath"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sql.DB
 
+func getDatabasePath() string {
+	if os.Getenv("ENVIRONMENT") == "production" {
+		// Ensure the data directory exists
+		err := os.MkdirAll("./data", 0755)
+		if err != nil {
+			log.Fatal("Could not create data directory:", err)
+		}
+		return filepath.Join("./data", "api.db")
+	}
+	return "api.db"
+}
 func InitDB() {
 	var err error
-	DB, err = sql.Open("sqlite3", "api.db")
+	dbPath := getDatabasePath()
+	DB, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
-		panic("Could not connect to database")
+		log.Fatal("Could not connect to database:", err)
 	}
+
+	// Configure connection pool
 	DB.SetMaxOpenConns(10)
 	DB.SetMaxIdleConns(5)
+
+	// Test the connection
+	err = DB.Ping()
+	if err != nil {
+		log.Fatal("Could not ping database:", err)
+	}
+
+	log.Printf("Connected to database at %s", dbPath)
 	createTables()
 }
 

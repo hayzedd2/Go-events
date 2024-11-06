@@ -94,7 +94,7 @@ func updateEvent(c *gin.Context) {
 	err = updatedEvent.Update()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Could not update event",
+			"message": err.Error(),
 		})
 		return
 	}

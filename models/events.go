@@ -8,13 +8,13 @@ import (
 
 type Event struct {
 	ID          int64
-	Name        string `binding:"required"`
-	Description string `binding:"required"`
-	Location  string    `binding:"required"`
-	Category  string    `binding:"required"`
-	StartDate time.Time `binding:"required"`
-	StartTime string    `binding:"required"`
-	UserId    string
+	Name        string    `binding:"required"`
+	Description string    `binding:"required"`
+	Location    string    `binding:"required"`
+	Category    string    `binding:"required"`
+	StartDate   time.Time `binding:"required"`
+	StartTime   string    `binding:"required"`
+	UserId      string
 }
 
 type BookStruct struct {
@@ -54,7 +54,7 @@ func GetAllEvents() ([]Event, error) {
 	var events []Event
 	for rows.Next() {
 		var event Event
-		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location,&event.Category, &event.UserId)
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location, &event.Category, &event.UserId)
 		if err != nil {
 			return nil, err
 		}
@@ -78,7 +78,7 @@ func GetEventById(id int64) (*Event, error) {
 func (e Event) Update() error {
 	query := `
 	UPDATE events
-	SET name = ?, description = ?, dateTime= ?, location = ?
+	SET name = ?, description = ?, startDate= ?,startTime=? ,location = ?, category =?
 	WHERE id = ?
 	`
 	stmt, err := db.DB.Prepare(query)
