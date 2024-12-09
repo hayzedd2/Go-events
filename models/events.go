@@ -15,6 +15,8 @@ type Event struct {
 	StartDate   time.Time `binding:"required"`
 	StartTime   string    `binding:"required"`
 	UserId      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 type BookStruct struct {
@@ -25,20 +27,16 @@ type BookStruct struct {
 
 func (e *Event) Save() error {
 	query := `INSERT INTO events(name, description, startDate, startTime, location, category, user_id) 
-	VALUES (?, ?, ?, ?, ?,?,?)
+	VALUES ($1, $2, $3, $4,$5,$6,$7)
+	RETURNING id
 	`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-
-	result, err := stmt.Exec(e.Name, e.Description, e.StartDate, e.StartTime, e.Location, e.Category, e.UserId)
-	if err != nil {
-		return err
-	}
-
-	id, err := result.LastInsertId()
+	var id int64
+	err = stmt.QueryRow(e.Name, e.Description, e.StartDate, e.StartTime, e.Location, e.Category, e.UserId).Scan(&id)
 	if err != nil {
 		return err
 	}
@@ -54,7 +52,7 @@ func GetAllEvents() ([]Event, error) {
 	var events []Event
 	for rows.Next() {
 		var event Event
-		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location, &event.Category, &event.UserId)
+		err := rows.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location, &event.Category, &event.UserId, &event.CreatedAt, &event.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -65,36 +63,31 @@ func GetAllEvents() ([]Event, error) {
 }
 
 func GetEventById(id int64) (*Event, error) {
-	query := "SELECT * FROM events WHERE id = ?"
+	query := "SELECT * FROM events WHERE id = $1"
 	row := db.DB.QueryRow(query, id)
 	var event Event
-	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location, &event.Category, &event.UserId)
+	err := row.Scan(&event.ID, &event.Name, &event.Description, &event.StartDate, &event.StartTime, &event.Location, &event.Category, &event.UserId,&event.CreatedAt, &event.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
 	return &event, nil
 }
 
+
 func (e Event) Update() error {
 	query := `
-	UPDATE events
-	SET name = ?, description = ?, startDate= ?,startTime=? ,location = ?, category =?
-	WHERE id = ?
-	`
-	stmt, err := db.DB.Prepare(query)
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-	_, err = stmt.Exec(e.Name, e.Description, e.StartDate, e.StartTime, e.Location, e.Category, e.ID)
-	if err != nil {
-		return err
-	}
-	return nil
+    UPDATE events 
+    SET name = $1, description = $2, startDate = $3, startTime = $4, 
+        location = $5, category = $6, updated_at = NOW()
+    WHERE id = $7`
+
+    _, err := db.DB.Exec(query, e.Name, e.Description, e.StartDate, 
+        e.StartTime, e.Location, e.Category, e.ID)
+    return err
 }
 
 func (e Event) DELETE() error {
-	query := "DELETE FROM events WHERE id = ?"
+	query := "DELETE FROM events WHERE id = $1"
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
@@ -109,7 +102,7 @@ func (e Event) DELETE() error {
 }
 
 func (e Event) Book(userId string) error {
-	query := "INSERT INTO bookings(event_id, user_id) VALUES (?,?)"
+	query := "INSERT INTO bookings(event_id, user_id) VALUES ($1,$2)"
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
@@ -121,7 +114,7 @@ func (e Event) Book(userId string) error {
 }
 
 func (e Event) CancelBooking(userId string) error {
-	query := "DELETE FROM bookings WHERE event_id = ? AND user_id = ?"
+	query := "DELETE FROM bookings WHERE event_id = $1 AND user_id = $2"
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
@@ -152,7 +145,7 @@ func GetAllBookings() ([]BookStruct, error) {
 }
 
 func IsBooked(userId string, eventId int64) (bool, error) {
-	query := `SELECT COUNT(*) FROM bookings WHERE user_id = ? AND event_id = ?`
+	query := `SELECT COUNT(*) FROM bookings WHERE user_id = $1 AND event_id = $2`
 	var count int
 	err := db.DB.QueryRow(query, userId, eventId).Scan(&count)
 	if err != nil {

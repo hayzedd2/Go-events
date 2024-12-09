@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/db"
 	"github.com/hayzedd2/Go-events/routes"
@@ -12,8 +11,8 @@ import (
 )
 
 func InitEnv() {
-	if os.Getenv("ENVIRONMENT") == "development" {
-        err := godotenv.Load()
+	err := godotenv.Load()
+	if os.Getenv("ENVIRONMENT") == "DEVELOPMENT" {
         if err != nil {
             log.Println("Error loading .env file:", err)
         }

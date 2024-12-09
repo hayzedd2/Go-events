@@ -29,7 +29,7 @@ func singleEvent(c *gin.Context) {
 	event, err := models.GetEventById(eventId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Could not fetch event",
+			"message": err.Error(),
 		})
 		return
 	}
