@@ -1,11 +1,11 @@
 package routes
 
 import (
+	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/models"
 	"github.com/hayzedd2/Go-events/utils"
-	"net/http"
-	"strings"
+	"github.com/lib/pq"
 )
 
 func signUp(c *gin.Context) {
@@ -19,28 +19,27 @@ func signUp(c *gin.Context) {
 	}
 	err = user.Save()
 	if err != nil {
-		switch {
-		case strings.Contains(err.Error(), "UNIQUE constraint failed: users.email"):
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Email address is already registered",
-			})
-			return
-		case strings.Contains(err.Error(), "UNIQUE constraint failed: users.userName"):
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Username is already taken",
-			})
-			return
-		case strings.Contains(err.Error(), "password must be at least 8 characters long"):
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "password must be at least 8 characters long",
-			})
-			return
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "could not create account",
-			})
-			return
+		if pqErr, ok := err.(*pq.Error); ok {
+			switch pqErr.Code {
+			case "23505":
+				if pqErr.Constraint == "users_email_key" {
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"message": "Email address is already registered",
+					})
+				} else if pqErr.Constraint == "users_userName_key" {
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"message": "Username is already taken",
+					})
+				}
+				return
+			default:
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"message": "An unexpected error occurred",
+				})
+				return
+			}
 		}
+
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User created succesfully!",

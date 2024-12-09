@@ -24,7 +24,10 @@ type UserLogin struct {
 
 func (u *User) Save() error {
 	u.UserId = uuid.New().String()
-	query := "INSERT INTO users(email, username, password, userId) values(?,?,?,?)"
+	query := `
+	INSERT INTO users(email, username, password, userId) 
+	VALUES($1, $2, $3, $4) 
+	RETURNING id`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		return err
@@ -38,20 +41,20 @@ func (u *User) Save() error {
 	if err != nil {
 		return err
 	}
-	result, err := stmt.Exec(u.Email, u.UserName, hashedPassword, u.UserId)
+	var id int64
+	err = stmt.QueryRow(u.Email, u.UserName, hashedPassword, u.UserId).Scan(&id)
 	if err != nil {
 		return err
 	}
-	userId, err := result.LastInsertId()
-	if err != nil {
-		return err
-	}
-	u.ID = userId
+	u.ID = id
 	return nil
 }
 
 func (u *UserLogin) ValidateCredentials() (*User, error) {
-	query := "SELECT id,userName,password,userId FROM users WHERE email =?"
+	query := `
+	INSERT INTO users(email, username, password, userId) 
+	VALUES($1, $2, $3, $4) 
+	RETURNING id`
 	row := db.DB.QueryRow(query, u.Email)
 	var retrievedPassword string
 	var user User

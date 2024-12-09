@@ -19,5 +19,4 @@ func RegisterRoutes(s *gin.Engine) {
 	authRoutes.GET("/user/details",GetUserDetails)
 	s.POST("/users/signup", signUp)
 	s.POST("/users/login", login)
-
 }
