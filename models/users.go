@@ -52,9 +52,9 @@ func (u *User) Save() error {
 
 func (u *UserLogin) ValidateCredentials() (*User, error) {
 	query := `
-	INSERT INTO users(email, username, password, userId) 
-	VALUES($1, $2, $3, $4) 
-	RETURNING id`
+	SELECT id, username, password, userId 
+	FROM users 
+	WHERE email = $1`
 	row := db.DB.QueryRow(query, u.Email)
 	var retrievedPassword string
 	var user User
@@ -70,7 +70,7 @@ func (u *UserLogin) ValidateCredentials() (*User, error) {
 }
 
 func GetUserByUserId(userId string) (*User, error) {
-	query := "SELECT id, email, userName, userId FROM users WHERE userId = ?"
+	query := "SELECT id, email, userName, userId FROM users WHERE userId = $1"
 	row := db.DB.QueryRow(query, userId)
 	var user User
 	err := row.Scan(&user.ID, &user.Email, &user.UserName, &user.UserId)

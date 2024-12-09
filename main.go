@@ -12,10 +12,12 @@ import (
 )
 
 func InitEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Error loading .env file:", err)
-	}
+	if os.Getenv("ENVIRONMENT") == "development" {
+        err := godotenv.Load()
+        if err != nil {
+            log.Println("Error loading .env file:", err)
+        }
+    }
 }
 
 func main() {

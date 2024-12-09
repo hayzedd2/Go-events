@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/models"
 	"github.com/hayzedd2/Go-events/utils"
 	"github.com/lib/pq"
+	"net/http"
 )
 
 func signUp(c *gin.Context) {
@@ -26,7 +26,7 @@ func signUp(c *gin.Context) {
 					c.JSON(http.StatusInternalServerError, gin.H{
 						"message": "Email address is already registered",
 					})
-				} else if pqErr.Constraint == "users_userName_key" {
+				} else if pqErr.Constraint == "users_username_key" {
 					c.JSON(http.StatusInternalServerError, gin.H{
 						"message": "Username is already taken",
 					})
@@ -38,6 +38,10 @@ func signUp(c *gin.Context) {
 				})
 				return
 			}
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "An unexpected error occurred",
+			})
 		}
 
 	}
