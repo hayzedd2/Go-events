@@ -9,9 +9,6 @@ import (
 
 var DB *sql.DB
 
-
-
-
 func InitDB() {
 	var err error
 	var connURL = os.Getenv("DATABASE_URL")
@@ -22,7 +19,6 @@ func InitDB() {
 	if err != nil {
 		log.Fatal("Could not connect to database:", err)
 	}
-
 	err = DB.Ping()
 	if err != nil {
 		log.Fatal("Could not ping database:", err)

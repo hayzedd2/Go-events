@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-
+	"strings"
 	"github.com/google/uuid"
 	"github.com/hayzedd2/Go-events/db"
 	"github.com/hayzedd2/Go-events/utils"
@@ -24,6 +24,8 @@ type UserLogin struct {
 
 func (u *User) Save() error {
 	u.UserId = uuid.New().String()
+	u.Email = strings.ToLower(u.Email)
+	u.UserName = strings.ToLower(u.UserName)
 	query := `
 	INSERT INTO users(email, username, password, userId) 
 	VALUES($1, $2, $3, $4) 
@@ -57,6 +59,8 @@ func (u *UserLogin) ValidateCredentials() (*User, error) {
 	WHERE email = $1`
 	row := db.DB.QueryRow(query, u.Email)
 	var retrievedPassword string
+	u.Email = strings.ToLower(u.Email)
+	u.UserName = strings.ToLower(u.UserName)
 	var user User
 	err := row.Scan(&user.ID, &user.UserName, &retrievedPassword, &user.UserId)
 	if err != nil {
