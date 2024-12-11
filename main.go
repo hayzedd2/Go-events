@@ -1,22 +1,21 @@
 package main
 
 import (
-	"log"
-	"os"
-	"strings"
 	"github.com/gin-gonic/gin"
 	"github.com/hayzedd2/Go-events/db"
 	"github.com/hayzedd2/Go-events/routes"
 	"github.com/joho/godotenv"
+	"log"
+	"os"
 )
 
 func InitEnv() {
 	err := godotenv.Load()
 	if os.Getenv("ENVIRONMENT") == "DEVELOPMENT" {
-        if err != nil {
-            log.Println("Error loading .env file:", err)
-        }
-    }
+		if err != nil {
+			log.Println("Error loading .env file:", err)
+		}
+	}
 }
 
 func main() {
@@ -34,22 +33,20 @@ func main() {
 
 }
 
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-	return false
-}
-
 func CORSMiddleware() gin.HandlerFunc {
-	allowedOrigins := strings.Split(os.Getenv("ALLOWED_ORIGIN"), ",")
+	allowedOrigins := []string{
+		"https://eventsease.vercel.app",
+		"http://localhost:3000",
+	}
+
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
+
+		// Check if the Origin is in the allowed list
 		if contains(allowedOrigins, origin) {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
+
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
@@ -58,6 +55,16 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(204)
 			return
 		}
+
 		c.Next()
 	}
+}
+
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
 }
