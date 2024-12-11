@@ -27,7 +27,7 @@ func main() {
 		gin.SetMode(gin.DebugMode)
 	}
 	s := gin.Default()
-	s.Use(CORSMiddleware())
+	// s.Use(CORSMiddleware())
 	routes.RegisterRoutes(s)
 	s.Run(":8080")
 
@@ -38,24 +38,18 @@ func CORSMiddleware() gin.HandlerFunc {
 		"https://eventsease.vercel.app",
 		"http://localhost:3000",
 	}
-
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-
-		// Check if the Origin is in the allowed list
 		if contains(allowedOrigins, origin) {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
 		}
-
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
 		}
-
 		c.Next()
 	}
 }
