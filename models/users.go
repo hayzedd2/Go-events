@@ -53,14 +53,14 @@ func (u *User) Save() error {
 }
 
 func (u *UserLogin) ValidateCredentials() (*User, error) {
+	u.Email = strings.ToLower(u.Email)
+	u.UserName = strings.ToLower(u.UserName)
 	query := `
 	SELECT id, username, password, userId 
 	FROM users 
 	WHERE email = $1`
 	row := db.DB.QueryRow(query, u.Email)
 	var retrievedPassword string
-	u.Email = strings.ToLower(u.Email)
-	u.UserName = strings.ToLower(u.UserName)
 	var user User
 	err := row.Scan(&user.ID, &user.UserName, &retrievedPassword, &user.UserId)
 	if err != nil {

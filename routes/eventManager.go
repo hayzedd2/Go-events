@@ -29,7 +29,7 @@ func singleEvent(c *gin.Context) {
 	event, err := models.GetEventById(eventId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+			"message":  "Something went wrong",
 		})
 		return
 	}
@@ -94,7 +94,7 @@ func updateEvent(c *gin.Context) {
 	err = updatedEvent.Update()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": err.Error(),
+			"message": "Something went wrong",
 		})
 		return
 	}
