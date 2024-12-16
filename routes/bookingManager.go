@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hayzedd2/Go-events/models"
+	"github.com/hayzedd2/eventease-be/models"
 	"net/http"
 	"strconv"
 )

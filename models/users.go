@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strings"
 	"github.com/google/uuid"
-	"github.com/hayzedd2/Go-events/db"
-	"github.com/hayzedd2/Go-events/utils"
+	"github.com/hayzedd2/eventease-be/db"
+	"github.com/hayzedd2/eventease-be/utils"
 )
 
 type User struct {

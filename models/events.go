@@ -2,7 +2,7 @@ package models
 
 import (
 	"errors"
-	"github.com/hayzedd2/Go-events/db"
+	"github.com/hayzedd2/eventease-be/db"
 	"time"
 )
 

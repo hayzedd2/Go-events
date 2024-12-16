@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hayzedd2/Go-events/middleware"
+	"github.com/hayzedd2/eventease-be/middleware"
 )
 
 func RegisterRoutes(s *gin.Engine) {

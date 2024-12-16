@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"github.com/gin-gonic/gin"
-	"github.com/hayzedd2/Go-events/models"
+	"github.com/hayzedd2/eventease-be/models"
 )
 
 func getEvents(c *gin.Context) {

@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hayzedd2/Go-events/db"
-	"github.com/hayzedd2/Go-events/routes"
+	"github.com/hayzedd2/eventease-be/db"
+	"github.com/hayzedd2/eventease-be/routes"
 	"github.com/joho/godotenv"
 	"log"
 	"os"

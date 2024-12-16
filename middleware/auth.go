@@ -3,9 +3,8 @@ package middleware
 import (
 	"net/http"
 	"strings"
-
 	"github.com/gin-gonic/gin"
-	"github.com/hayzedd2/Go-events/utils"
+	"github.com/hayzedd2/eventease-be/utils"
 )
 
 
