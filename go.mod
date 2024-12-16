@@ -1,4 +1,4 @@
-module github.com/hayzedd2/Go-events
+module github.com/hayzedd2/eventease-be
 
 go 1.22.4
 
